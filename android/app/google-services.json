@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "96565757490",
+    "project_id": "wendy-companion-x",
+    "storage_bucket": "wendy-companion-x.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:96565757490:android:cfb3b6fa2b0a0695601e2b",
+        "android_client_info": {
+          "package_name": "com.zaydor.wendycompanionx"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCozB4pqD2Ub4qdqPDMTHaZKbb_201RrI4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
