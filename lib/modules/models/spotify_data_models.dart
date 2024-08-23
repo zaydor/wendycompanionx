@@ -7,7 +7,7 @@ class Playlist {
   final String name;
   final Owner owner;
   final bool public;
-  final Tracks tracks;
+  Tracks tracks;
   final String type;
   final String uri;
 
@@ -40,6 +40,38 @@ class Playlist {
       uri: json['uri'],
     );
   }
+
+  // {
+  //   "playlists": {
+  //     "1": {
+  //       "name": "My Playlist",
+  //       "description": "My awesome playlist",
+  //       "followers": 0,
+  //       "href": "https://api.spotify.com/v1/playlists/2vZX9OzU7tcqCt6TC4ZECE",
+  //       "uri": "spotify:playlist:2vZX9OzU7tcqCt6TC4ZECE",
+  //       "tracks": {
+  //         "total": 2,
+  //         "items": [
+  //             1, 2, 3, 4, 5
+  //         ]
+  //       }
+  //     }
+  //   }
+  // }
+
+  Map<String, dynamic> toJson(Playlist playlist) {
+    return {
+      playlist.uri: {
+        'name': playlist.name,
+        'description': playlist.description,
+        'followers': playlist.followers.total,
+        'tracks': {
+          'total': playlist.tracks.total,
+          'items': playlist.tracks.items.map((i) => i.track.uri).toList(),
+        }
+      }
+    };
+  }
 }
 
 class Followers {
@@ -69,6 +101,14 @@ class Image {
       height: json['height'],
       width: json['width'],
     );
+  }
+
+  Map<String, dynamic> toJson(Image image) {
+    return {
+      'url': image.url,
+      'height': image.height,
+      'width': image.width,
+    };
   }
 }
 
@@ -102,7 +142,7 @@ class Tracks {
   final int offset;
   final String? previous;
   final int total;
-  final List<TrackItem> items;
+  List<TrackItem> items;
 
   Tracks({
     required this.href,
@@ -124,6 +164,12 @@ class Tracks {
       total: json['total'],
       items: (json['items'] as List).map((i) => TrackItem.fromJson(i)).toList(),
     );
+  }
+  
+  Map<String, dynamic> toJson(Tracks tracks) {
+    return {
+      'items': tracks.items.map((i) => i.toJson(i)).toList(),
+    };
   }
 }
 
@@ -148,6 +194,39 @@ class TrackItem {
       track: Track.fromJson(json['track']),
     );
   }
+
+  Map<String, dynamic> toJson(TrackItem trackItem) {
+    return {
+    trackItem.track.uri: {
+      'added_at': trackItem.addedAt,
+      'added_by': trackItem.addedBy.toJson(trackItem.addedBy),
+      'is_local': trackItem.isLocal,
+      'track': {
+        'album': {
+          'album_type': trackItem.track.album.albumType,
+          'total_tracks': trackItem.track.album.totalTracks,
+          'href': trackItem.track.album.href,
+          'id': trackItem.track.album.id,
+          'images': trackItem.track.album.images.map((i) => i.toJson(i)).toList(),
+          'name': trackItem.track.album.name,
+          'release_date': trackItem.track.album.releaseDate,
+          'type': trackItem.track.album.type,
+          'uri': trackItem.track.album.uri,
+          'artists': trackItem.track.album.artists.map((i) => i.toJson(i)).toList(),
+        },
+        'artists': trackItem.track.artists.map((i) => i.toJson(i)).toList(),
+        'duration_ms': trackItem.track.durationMs,
+        'href': trackItem.track.href,
+        'id': trackItem.track.id,
+        'name': trackItem.track.name,
+        'popularity': trackItem.track.popularity,
+        'type': trackItem.track.type,
+        'uri': trackItem.track.uri,
+        'is_local': trackItem.track.isLocal,
+      }
+      }
+    };
+  }
 }
 
 class AddedBy {
@@ -167,6 +246,14 @@ class AddedBy {
       id: json['id'],
       uri: json['uri'],
     );
+  }
+
+  Map<String, dynamic> toJson(AddedBy addedBy) {
+    return {
+      'href': addedBy.href,
+      'id': addedBy.id,
+      'uri': addedBy.uri,
+    };
   }
 }
 
@@ -272,5 +359,14 @@ class Artist {
       name: json['name'],
       uri: json['uri'],
     );
+  }
+
+  Map<String, dynamic> toJson(Artist artist) {
+    return {
+      'href': artist.href,
+      'id': artist.id,
+      'name': artist.name,
+      'uri': artist.uri,
+    };
   }
 }

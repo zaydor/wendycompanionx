@@ -4,6 +4,15 @@ import 'modules/spotify_interactions.dart' as spotify_interactions;
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
+/*
+flow:
+1. on page load, ask to sign in
+2. after sign in, fetch latest changes to the playlist
+3. also fetch database data
+4. if latest changes are not in the database, update the database
+5. populate page with database data
+*/
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(

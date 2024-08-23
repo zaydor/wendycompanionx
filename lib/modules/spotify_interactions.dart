@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:logger/logger.dart';
+import 'package:wendy_companion/modules/firebase_interactions.dart';
 import 'models/spotify_data_models.dart';
 import '../secrets.dart';
 
@@ -25,7 +26,24 @@ void requestSpotifyCredentials() async {
       var accessToken = jsonResponse['access_token'];
 
       // Fetch playlist using the access token
-      fetchPlaylist(accessToken);
+      Future<Playlist?> playlist = fetchPlaylist(accessToken);
+
+      // convert playlist to json
+      var playlistData = await playlist;
+      var playlistJson = playlistData!.toJson(playlistData);
+      var playlistTracks = playlistData.tracks.toJson(playlistData.tracks);
+
+      _logger.i('playlistTracks: $playlistTracks');
+      
+
+      // var firebaseInteractions = FirebaseInteractions();
+      // firebaseInteractions.setData('playlists', playlistJson);
+
+
+      // firebaseInteractions.setData('tracks', playlistTracks);
+      
+
+      // push data to firebase
     } else {
       _logger.w('Request failed with status: ${response.statusCode}');
     }
@@ -36,11 +54,12 @@ void requestSpotifyCredentials() async {
   }
 }
 
-void fetchPlaylist(String accessToken) async {
+Future<Playlist?> fetchPlaylist(String accessToken) async {
   var client = http.Client();
+  Playlist? playlist;
+  List<TrackItem> allTracks = [];
   try {
     String? playlistUrl = 'https://api.spotify.com/v1/playlists/2vZX9OzU7tcqCt6TC4ZECE';
-    List<TrackItem> allTracks = [];
 
     while (true) {
       var playlistResponse = await client.get(
@@ -53,7 +72,7 @@ void fetchPlaylist(String accessToken) async {
       if (playlistResponse.statusCode == 200) {
         if (allTracks.isEmpty) {
           var playlistJson = jsonDecode(playlistResponse.body);
-          Playlist playlist = Playlist.fromJson(playlistJson);
+          playlist = Playlist.fromJson(playlistJson);
           allTracks.addAll(playlist.tracks.items);
 
           // Check if there are more tracks to fetch
@@ -83,4 +102,8 @@ void fetchPlaylist(String accessToken) async {
   } finally {
     client.close();
   }
+
+  playlist?.tracks.items = allTracks;
+
+  return playlist;
 }
